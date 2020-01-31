@@ -34,7 +34,28 @@ void create_dataset(){
 }
 int main() {
 
-    create_dataset();
+//    create_dataset();
+    string x, y, line;
+    ifstream myfile ("../ds.csv");
+
+    std::vector<std::vector<int>> coords;
+
+    if (myfile.is_open())
+    {
+        while (!myfile.eof()){
+            getline(myfile, x, ';');
+            getline(myfile, y, '\n');
+            if (x.empty()){
+                break;
+            }
+            coords.push_back({stoi(x), stoi(y)});
+        }
+    }
+
+    else cout << "Unable to open file";
+    cout << "UDataset";
+
+
 
     return 0;
 
