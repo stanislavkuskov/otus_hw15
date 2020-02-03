@@ -1,14 +1,9 @@
 #include <iostream>
-#include <utility>
 #include <vector>
 
-#include <cblas.h>
 #include <dlib/clustering.h>
-#include <dlib/rand.h>
 #include <random>
 
-using namespace std;
-using namespace dlib;
 
 void create_dataset(const std::string& dataset_file_name){
     std::ofstream myfile;
@@ -91,20 +86,20 @@ void create_dlib_dataset(const std::string& dataset_file_name){
 void predict(std::string dataset_file_name, std::string result_file_name){
 
 //  тип записи - вектор из 2 элементов [[x, y],]
-    typedef matrix<double,2,1> sample_type;
+    typedef dlib::matrix<double,2,1> sample_type;
 //    массив записей (датафрейм)
     std::vector<sample_type> samples;
     sample_type m;
 
 //    параметры kmeans алгоритма
-    typedef radial_basis_kernel<sample_type> kernel_type;
+    typedef dlib::radial_basis_kernel<sample_type> kernel_type;
 //    увеличил точность (tolerance) и добавил словарей. Теперь кластерицация точнее но медленнее
-    kcentroid<kernel_type> kc(kernel_type(0.01),0.001, 16);
-    kkmeans<kernel_type> test(kc);
+    dlib::kcentroid<kernel_type> kc(kernel_type(0.01),0.001, 16);
+    dlib::kkmeans<kernel_type> test(kc);
 
 //  читаем датасет из файла и заполняем датафрейм
-    string x, y, line;
-    ifstream dataset_file(dataset_file_name);
+    std::string x, y, line;
+    std::ifstream dataset_file(dataset_file_name);
     if (dataset_file.is_open())
     {
         while (!dataset_file.eof()){
