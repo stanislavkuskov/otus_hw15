@@ -10,6 +10,9 @@ configure_file(version.h.in ${PROJECT_SOURCE_DIR}/version.h)
 
 add_executable(kkmeans main.cpp)
 
+target_link_libraries(kkmeans dlib)
+target_link_libraries(kkmeans openblas)
+
 set_target_properties(kkmeans PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON

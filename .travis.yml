@@ -2,6 +2,11 @@ dist: xenial
 language: cpp
 compiler: clang
 
+install:
+  - sudo apt-get update
+  - sudo apt-get install libopenblas-dev
+  - sudo apt install libdlib-dev
+
 script:
   - cmake .
   - cmake --build .

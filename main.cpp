@@ -99,7 +99,7 @@ void predict(std::string dataset_file_name, std::string result_file_name){
 //    параметры kmeans алгоритма
     typedef radial_basis_kernel<sample_type> kernel_type;
 //    увеличил точность (tolerance) и добавил словарей. Теперь кластерицация точнее но медленнее
-    kcentroid<kernel_type> kc(kernel_type(0.1),0.001, 16);
+    kcentroid<kernel_type> kc(kernel_type(0.01),0.001, 16);
     kkmeans<kernel_type> test(kc);
 
 //  читаем датасет из файла и заполняем датафрейм
