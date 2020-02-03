@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 #include <vector>
 
 #include <cblas.h>
@@ -9,36 +10,37 @@
 using namespace std;
 using namespace dlib;
 
-std::string create_dataset(){
-
-    std::string dataset_file_name = "ds.csv";
+void create_dataset(const std::string& dataset_file_name){
     std::ofstream myfile;
     myfile.open(dataset_file_name);
-    for (int i = 0; i < 150; ++i){
+    for (int i = 0; i < 100; ++i){
         int x = -(std::rand() % 100 + 1) + (std::rand() % 100 + 1);
         int y = -(std::rand() % 100 + 1) + (std::rand() % 100 + 1);
         myfile << x << ";" << y << "\n";
     }
-    for (int i = 0; i < 25; ++i){
-        int x = -(std::rand() % 10 + 1) - 50;
-        int y = -(std::rand() % 10 + 1) - 50;
+    for (int i = 0; i < 50; ++i){
+        int x = -(std::rand() % 20 + 1) - 50;
+        int y = -(std::rand() % 20 + 1) - 50;
         myfile << x << ";" << y << "\n";
     }
 
-    for (int i = 0; i < 25; ++i){
-        int x = (std::rand() % 10 + 1) + 50;
-        int y = (std::rand() % 10 + 1) + 50;
+    for (int i = 0; i < 50; ++i){
+        int x = (std::rand() % 20 + 1) + 50;
+        int y = (std::rand() % 20 + 1) + 50;
         myfile << x << ";" << y << "\n";
     }
+
+//    for (int i = 0; i < 25; ++i){
+//        int x = (std::rand() % 20 + 1) + 10;
+//        int y = (std::rand() % 20 + 1) + 10;
+//        myfile << x << ";" << y << "\n";
+//    }
 
     myfile.close();
-    return dataset_file_name;
 }
 
-std::string create_dlib_dataset(){
+void create_dlib_dataset(const std::string& dataset_file_name){
     dlib::rand rnd;
-
-    std::string dataset_file_name = "ds_dlib.csv";
     std::ofstream myfile;
     myfile.open(dataset_file_name);
 
@@ -84,31 +86,30 @@ std::string create_dlib_dataset(){
 
     }
     myfile.close();
-    return dataset_file_name;
 }
 
-int main() {
+void predict(std::string dataset_file_name, std::string result_file_name){
 
-    std::string dataset_file_name = create_dlib_dataset();
-
+//  тип записи - вектор из 2 элементов [[x, y],]
     typedef matrix<double,2,1> sample_type;
+//    массив записей (датафрейм)
     std::vector<sample_type> samples;
     sample_type m;
 
+//    параметры kmeans алгоритма
     typedef radial_basis_kernel<sample_type> kernel_type;
-    kcentroid<kernel_type> kc(kernel_type(0.1),0.01, 8);
+//    увеличил точность (tolerance) и добавил словарей. Теперь кластерицация точнее но медленнее
+    kcentroid<kernel_type> kc(kernel_type(0.1),0.001, 16);
     kkmeans<kernel_type> test(kc);
 
+//  читаем датасет из файла и заполняем датафрейм
     string x, y, line;
-    ifstream myfile(dataset_file_name);
-
-    std::vector<std::vector<int>> coords;
-
-    if (myfile.is_open())
+    ifstream dataset_file(dataset_file_name);
+    if (dataset_file.is_open())
     {
-        while (!myfile.eof()){
-            getline(myfile, x, ';');
-            getline(myfile, y, '\n');
+        while (!dataset_file.eof()){
+            getline(dataset_file, x, ';');
+            getline(dataset_file, y, '\n');
             if (x.empty()){
                 break;
             }
@@ -118,28 +119,45 @@ int main() {
         }
     }
 
-    else cout << "Unable to open file";
-
+//    определяем центры кластеров
     std::vector<sample_type> initial_centers;
     test.set_number_of_centers(3);
     pick_initial_centers(3, initial_centers, samples, test.get_kernel());
 
+//    тренируем центры на датафрейме
     test.train(samples, initial_centers);
 
-    std::ofstream resfile;
-    resfile.open("result.csv");
+//    пишем файл с предсказаниями
+    std::ofstream result_file;
+    result_file.open(result_file_name);
 
-
-    for (unsigned long i = 0; i < samples.size(); ++i)
+    for (auto & sample : samples)
     {
-        double x = samples[i](0);
-        double y = samples[i](1);
-        int res = test(samples[i]);
-        resfile << x << ";" << y << ";" << res << "\n";
-
+        double x = sample(0);
+        double y = sample(1);
+        int res = test(sample);
+        result_file << x << ";" << y << ";" << res << "\n";
     }
+    result_file.close();
+}
 
-    resfile.close();
+
+int main() {
+
+//    std::string dataset_file_name = "dlib_dataset.txt";
+//    std::string result_file_name = "dlib_result.txt";
+//
+//    create_dlib_dataset(dataset_file_name);
+//
+//    predict(dataset_file_name, result_file_name);
+
+    std::string dataset_file_name = "my_dataset.txt";
+    std::string result_file_name = "my_result.txt";
+
+    create_dataset(dataset_file_name);
+
+    predict(dataset_file_name, result_file_name);
+
     return 0;
 
 }
