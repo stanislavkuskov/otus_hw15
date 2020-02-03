@@ -143,20 +143,24 @@ void predict(std::string dataset_file_name, std::string result_file_name){
 
 
 int main() {
+    {
+        std::string dataset_file_name = "dlib_dataset.txt";
+        std::string result_file_name = "dlib_result.txt";
 
-//    std::string dataset_file_name = "dlib_dataset.txt";
-//    std::string result_file_name = "dlib_result.txt";
-//
-//    create_dlib_dataset(dataset_file_name);
-//
-//    predict(dataset_file_name, result_file_name);
+        create_dlib_dataset(dataset_file_name);
 
-    std::string dataset_file_name = "my_dataset.txt";
-    std::string result_file_name = "my_result.txt";
+        predict(dataset_file_name, result_file_name);
+    }
 
-    create_dataset(dataset_file_name);
+    {
+        std::string dataset_file_name = "my_dataset.txt";
+        std::string result_file_name = "my_result.txt";
 
-    predict(dataset_file_name, result_file_name);
+        create_dataset(dataset_file_name);
+
+        predict(dataset_file_name, result_file_name);
+    }
+
 
     return 0;
 
