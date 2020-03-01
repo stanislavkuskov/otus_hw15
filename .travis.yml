@@ -5,7 +5,7 @@ compiler: clang
 install:
   - sudo apt-get update
   - sudo apt-get install libopenblas-dev
-  - sudo apt-get install libdlib-dev=19.10
+  - sudo apt-get install libdlib-dev
 
 script:
   - cmake .
